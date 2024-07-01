@@ -14,6 +14,8 @@ public class Historico {
     private Character status;
     @Column(nullable = false)
     private String acionador;
+    @Column(nullable = false)
+    private String responsavel;
     @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora;
 
@@ -39,6 +41,14 @@ public class Historico {
 
     public void setAcionador(String acionador) {
         this.acionador = acionador;
+    }
+
+    public String getResponsavel() {
+        return responsavel;
+    }
+
+    public void setResponsavel(String responsavel) {
+        this.responsavel = responsavel;
     }
 
     public LocalDateTime getDataHora() {

@@ -39,6 +39,7 @@
             text-align: center;
             color: white;
             border-radius: 5px;
+            align-items: flex-end;
         }
         .opcao:hover {
             background-color: #555;
@@ -101,30 +102,21 @@
         .update-btn:hover {
             background-color: #a86200;
         }
-        .dropdown {
-            position: relative;
-            display: inline-block;
-            float: right;
-            margin-top: 10px;
-            margin-right: 10px
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-        }
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
+        .deslogar {
+            margin-top: auto;
+            font-size: 18px;
+            width: 140px;
+            height: 60px;
+            line-height: 60px;
+            background-color: #000000;
             text-decoration: none;
             display: block;
+            text-align: center;
+            color: white;
+            border-radius: 5px;
         }
-        .dropdown-content a:hover {background-color: #f1f1f1}
-        .dropdown:hover .dropdown-content {
-            display: block;
+        .bem-vindo {
+            font-size: 35px;
         }
     </style>
 </head>
@@ -132,17 +124,16 @@
 <div class="container">
     <div class="opcoes">
         <a href="/" class="opcao">Home</a>
-        <a href="historico.html" class="opcao">Histórico</a>
-        <a href="Cartão.html" class="opcao">Cartão</a>
+        <a href="/historico" class="opcao">Histórico</a>
         <a href="/usuario/cadastrar" class="opcao">Usuários</a>
+        <a href="Cartão.html" class="opcao">Cartão</a>
+        <a href="Cartão.html" class="opcao">Ativar Alarme</a>
+        <a href="/logout" class="deslogar">Sair</a>
     </div>
     <div class="historico">
-        <div class="dropdown">
-            <button class="opcao"><span th:text="${nome}">Nome do Usuário</span></button>
-            <div class="dropdown-content">
-                <a href="/logout">Deslogar</a>
-            </div>
-        </div>
+
+        <h1 class="bem-vindo">Bem vindo  <span th:text="${nome}"></span></h1>
+
 
         <!-- Conteúdo existente -->
         <div class="info-box">
@@ -150,15 +141,23 @@
             <table id="infoTable">
                 <tr th:if="${ultimoHistorico != null}">
                     <th>Status</th>
-                    <td th:text="${ultimoHistorico.status}"></td>
+                    <td th:switch="${ultimoHistorico.status}">
+                        <span th:case="'A'" th:text="Armado"></span>
+                        <span th:case="'D'" th:text="Desarmado"></span>
+                        <span th:case="'V'" th:text="Disparado"></span>
+                    </td>
                 </tr>
                 <tr th:if="${ultimoHistorico != null}">
                     <th>Acionador</th>
                     <td th:text="${ultimoHistorico.acionador}"></td>
                 </tr>
                 <tr th:if="${ultimoHistorico != null}">
-                    <th>Data e hora</th>
-                    <td th:text="${ultimoHistorico.dataHora}"></td>
+                    <th>Responsavel</th>
+                    <td th:text="${ultimoHistorico.responsavel}"></td>
+                </tr>
+                <tr th:if="${ultimoHistorico != null}">
+                    <th>Data/Hora</th>
+                    <td th:text="${#temporals.format(ultimoHistorico.dataHora, 'HH:mm:ss - dd/MM/yyyy')}"></td>
                 </tr>
                 <tr th:if="${ultimoHistorico == null}">
                     <td colspan="2">Nenhum histórico encontrado.</td>
@@ -186,7 +185,12 @@
                     <td th:text="${usuario.email}"></td>
                     <td th:text="${usuario.telefone}"></td>
                     <td>Cartão</td>
-                    <td th:text="${usuario.permissao}"></td>
+
+                    <td th:switch="${usuario.permissao}">
+                        <span th:case="'A'" th:text="Administrador"></span>
+                        <span th:case="'U'" th:text="Usuario"></span>
+                    </td>
+
                     <td><a th:href="@{'/usuario/' + ${usuario.id}}"><button class="update-btn">Alterar</button></a></td>
                     <td><button class="delete-btn" th:onclick="|if(confirm('Confirma?')) { window.location.href = '/usuario/${usuario.id}/excluir' }|">Remover</button></td>
                 </tr>
@@ -196,47 +200,46 @@
 
         <div class="info-box">
             <h2>Alarmes Agendados</h2>
-            <div id="alarmeForm">
-                <h3>Adicionar Alarme</h3>
-                <label for="descricao">Descrição:</label>
-                <input type="text" id="descricao" name="descricao" required>
+            <form action="/alarme/adicionar" method="post">
+                <div id="alarmeForm">
+                    <h3>Adicionar Alarme</h3>
+                    <label for="descricao">Descrição:</label>
+                    <input type="text" id="descricao" name="descricao" required>
 
-                <label for="dataHora">Data e Hora:</label>
-                <input type="datetime-local" id="dataHora" name="dataHora" required>
+                    <label for="dataHora">Data e Hora:</label>
+                    <input type="datetime-local" id="dataHora" name="dataHora" required>
 
-                <label for="senhaCriarUsuario">Senha para criar usuário:</label>
-                <input type="password" id="senhaCriarUsuario" name="senhaCriarUsuario" required>
-
-                <button type="button" onclick="adicionarAlarme()">Adicionar</button>
-            </div>
+                    <button type="submit">Adicionar</button>
+                </div>
+            </form>
             <table id="alarmesTable">
                 <thead>
                 <tr>
                     <th>Data/Hora</th>
                     <th>Descrição</th>
-                    <th>Ações</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Aqui serão adicionados os alarmes dinamicamente -->
+                <tr th:if="${#lists.isEmpty(agendados)}">
+                    <td colspan="3">Nenhum agendamento encontrado.</td>
+                </tr>
+                <tr th:each="agendado : ${agendados}">
+                    <td th:text="${#temporals.format(agendado.dataHora, 'HH:mm:ss - dd/MM/yyyy')}"></td>
+                    <td th:text="${agendado.descricao}"></td>
+
+                    <!-- <td><a th:href="@{'/agendado/' + ${agendado.id}}"><button class="update-btn">Alterar</button></a></td> -->
+
+                    <td>
+                        <button class="delete-btn" th:onclick="|if(confirm('Confirma?')) { window.location.href = '/agendado/${agendado.id}/excluir' }|">Remover</button>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
     </div>
-</div>
 
-<script>
-    // Função para formatar a data/hora
-    function formatarDataHora(dataHora) {
-        var data = new Date(dataHora);
-        var dia = data.getDate().toString().padStart(2, '0');
-        var mes = (data.getMonth() + 1).toString().padStart(2, '0');
-        var ano = data.getFullYear();
-        var hora = data.getHours().toString().padStart(2, '0');
-        var minutos = data.getMinutes().toString().padStart(2, '0');
-        return `${dia}/${mes}/${ano} ${hora}:${minutos}`;
-    }
-</script>
+</div>
 
 </body>
 </html>
