@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programar Alarme</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            height: 100%;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        .opcoes {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            background-color: #333;
+            color: #fff;
+            width: 180px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .opcao {
+            margin-bottom: 10px;
+            font-size: 18px;
+            width: 140px;
+            height: 60px;
+            line-height: 60px;
+            background-color: #000;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            color: white;
+            border-radius: 5px;
+        }
+        .opcao:hover {
+            background-color: #555;
+        }
+        .main-content {
+            flex: 1; /* Expande para ocupar todo o espaço disponível */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centraliza na horizontal */
+            padding: 20px;
+        }
+        .title {
+            font-size: 40px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .programar-alarme {
+            width: 100%;
+            max-width: 600px; /* Limita a largura para uma melhor legibilidade */
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        input[type="datetime-local"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .button {
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            text-decoration: none; /* Remove underline */
+            display: inline-block;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #555;
+        }
+        .alarms-list {
+            width: 100%;
+            max-width: 600px; /* Limita a largura para uma melhor legibilidade */
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            padding: 20px;
+            overflow-y: auto; /* Permite rolagem vertical se necessário */
+        }
+        .alarm-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .alarm-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="opcoes">
+            <a href="historico.html" class="opcao">Histórico</a>
+            <a href="Cartão.html" class="opcao">Cartão</a>
+            <a href="usuarios.html" class="opcao">Usuários</a>
+            <a href="casas.cadastradas.html" class="opcao">Casas Cadastradas</a>
+            <a href="index.html" class="opcao">Cadastrar Casa</a>
+        </div>
+        <div class="main-content">
+            <div class="title">Programar Alarme</div>
+            <div class="programar-alarme">
+                <form id="programarAlarmeForm">
+                    <div class="form-section">
+                        <label for="dataAtivacao">Data e Hora de Ativação:</label>
+                        <input type="datetime-local" id="dataAtivacao" name="dataAtivacao" required>
+                    </div>
+                    <div class="form-section">
+                        <label for="localizacao">Localização:</label>
+                        <input type="text" id="localizacao" name="localizacao" required>
+                    </div>
+                    <div class="form-section">
+                        <label for="descricao">Descrição:</label>
+                        <input type="text" id="descricao" name="descricao" required>
+                    </div>
+                    <div class="buttons">
+                        <button type="submit" class="button">Programar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="alarms-list" id="alarmsList">
+                <h2>Alarmes Programados</h2>
+                <!-- Os alarmes programados serão inseridos aqui -->
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('programarAlarmeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Obter os valores dos campos do formulário
+            var dataAtivacao = document.getElementById('dataAtivacao').value;
+            var localizacao = document.getElementById('localizacao').value;
+            var descricao = document.getElementById('descricao').value;
+
+            // Criar um novo elemento de alarme
+            var alarmItem = document.createElement('div');
+            alarmItem.className = 'alarm-item';
+            alarmItem.innerHTML = '<strong>Data e Hora:</strong> ' + dataAtivacao + '<br>' +
+                                  '<strong>Localização:</strong> ' + localizacao + '<br>'
+                                  '<strong>Descrição:</strong> ' + descricao + '<br>';
+            
+            // Adicionar o novo alarme à lista de alarmes
+            document.getElementById('alarmsList').appendChild(alarmItem);
+            
+            // Limpar o formulário
+            document.getElementById('programarAlarmeForm').reset();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Alarm System</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        .opcoes {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            background-color: #333;
+            color: #fff;
+            width: 180px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .opcao {
+            margin-bottom: 10px;
+            font-size: 18px;
+            width: 140px;
+            height: 60px;
+            line-height: 60px;
+            background-color: #000000;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            color: white;
+            border-radius: 5px;
+        }
+        .opcao:hover {
+            background-color: #555;
+        }
+        .historico {
+            font-size: 20px;
+            width: calc(100% - 180px);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .info-box {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #e6e6e6;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            color: #000;
+        }
+        th {
+            background-color: #999;
+        }
+        td {
+            background-color: #fff;
+        }
+        .delete-btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+        .update-btn {
+            background-color: #d27b00;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .update-btn:hover {
+            background-color: #a86200;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            float: right;
+            margin-top: 10px;
+            margin-right: 10px
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-content a:hover {background-color: #f1f1f1}
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="opcoes">
+        <a href="/" class="opcao">Home</a>
+        <a href="historico.html" class="opcao">Histórico</a>
+        <a href="Cartão.html" class="opcao">Cartão</a>
+        <a href="/usuario/cadastrar" class="opcao">Usuários</a>
+    </div>
+    <div class="historico">
+        <div class="dropdown">
+            <button class="opcao"><span th:text="${nome}">Nome do Usuário</span></button>
+            <div class="dropdown-content">
+                <a href="/logout">Deslogar</a>
+            </div>
+        </div>
+
+        <!-- Conteúdo existente -->
+        <div class="info-box">
+            <h2>Status atual</h2>
+            <table id="infoTable">
+                <tr th:if="${ultimoHistorico != null}">
+                    <th>Status</th>
+                    <td th:text="${ultimoHistorico.status}"></td>
+                </tr>
+                <tr th:if="${ultimoHistorico != null}">
+                    <th>Acionador</th>
+                    <td th:text="${ultimoHistorico.acionador}"></td>
+                </tr>
+                <tr th:if="${ultimoHistorico != null}">
+                    <th>Data e hora</th>
+                    <td th:text="${ultimoHistorico.dataHora}"></td>
+                </tr>
+                <tr th:if="${ultimoHistorico == null}">
+                    <td colspan="2">Nenhum histórico encontrado.</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="info-box">
+            <h2>Usuários Associados</h2>
+            <table id="usuariosTable">
+                <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>Cartão</th>
+                    <th>Permissão</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.nome}"></td>
+                    <td th:text="${usuario.email}"></td>
+                    <td th:text="${usuario.telefone}"></td>
+                    <td>Cartão</td>
+                    <td th:text="${usuario.permissao}"></td>
+                    <td><a th:href="@{'/usuario/' + ${usuario.id}}"><button class="update-btn">Alterar</button></a></td>
+                    <td><button class="delete-btn" th:onclick="|if(confirm('Confirma?')) { window.location.href = '/usuario/${usuario.id}/excluir' }|">Remover</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box">
+            <h2>Alarmes Agendados</h2>
+            <div id="alarmeForm">
+                <h3>Adicionar Alarme</h3>
+                <label for="descricao">Descrição:</label>
+                <input type="text" id="descricao" name="descricao" required>
+
+                <label for="dataHora">Data e Hora:</label>
+                <input type="datetime-local" id="dataHora" name="dataHora" required>
+
+                <label for="senhaCriarUsuario">Senha para criar usuário:</label>
+                <input type="password" id="senhaCriarUsuario" name="senhaCriarUsuario" required>
+
+                <button type="button" onclick="adicionarAlarme()">Adicionar</button>
+            </div>
+            <table id="alarmesTable">
+                <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Aqui serão adicionados os alarmes dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Função para formatar a data/hora
+    function formatarDataHora(dataHora) {
+        var data = new Date(dataHora);
+        var dia = data.getDate().toString().padStart(2, '0');
+        var mes = (data.getMonth() + 1).toString().padStart(2, '0');
+        var ano = data.getFullYear();
+        var hora = data.getHours().toString().padStart(2, '0');
+        var minutos = data.getMinutes().toString().padStart(2, '0');
+        return `${dia}/${mes}/${ano} ${hora}:${minutos}`;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Alarmes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        .opcoes {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            background-color: #333;
+            color: #fff;
+            width: 180px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .opcao {
+            margin-bottom: 10px;
+            font-size: 18px;
+            width: 140px;
+            height: 60px;
+            line-height: 60px;
+            background-color: #000000;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            color: white;
+            border-radius: 5px;
+        }
+        .opcao:hover {
+            background-color: #555;
+        }
+        .historico {
+            font-size: 20px;
+            width: calc(100% - 180px);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            color: #000;
+        }
+        th {
+            background-color: #999;
+        }
+        td {
+            background-color: #e6e6e6;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .button {
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .button:last-child {
+            margin-right: 0;
+        }
+        .trash, .restore {
+            cursor: pointer;
+            margin-left: 10px;
+            color: red;
+            font-size: 18px;
+        }
+        .trash:hover, .restore:hover {
+            color: darkred;
+        }
+        .deleted-items {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 9999;
+        }
+        .deleted-items table {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .deleted-items th, .deleted-items td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .deleted-items th {
+            background-color: #999;
+        }
+        .deleted-items td {
+            background-color: #333;
+            color: #fff;
+        }
+        .deleted-items .button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="opcoes">
+            <a href="historico.html" class="opcao">Histórico</a>
+            <a href="Cartão.html" class="opcao">Cartão</a>
+            <a href="usuarios.html" class="opcao">Usuários</a>
+            <a href="casas.cadastradas.html" class="opcao">Casas Cadastradas</a>
+            <a href="index.html" class="opcao">Cadastrar Casa</a>
+        </div>
+        <div class="historico">
+            <div class="title">Histórico de Alarmes</div>
+            <div class="buttons">
+                <button class="button" onclick="deleteSelected()">Deletar Histórico</button>
+                <button class="button" onclick="showDeletedItems()">Verificar Lixeira</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome do Alarme</th>
+                        <th>Data de Instalação</th>
+                        <th>Quando Disparou</th>
+                        <th>Local</th>
+                        <th>Duração</th>
+                        <th>Quem Desligou</th>
+                        <th>Selecionar</th>
+                    </tr>
+                </thead>
+                <tbody id="alarmTableBody">
+                    <tr>
+                        <td>Alarme 1</td>
+                        <td>01/01/2023</td>
+                        <td>21/06/2023</td>
+                        <td>Sala</td>
+                        <td>5 minutos</td>
+                        <td>Usuário A</td>
+                        <td><input type="checkbox" class="selectCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Alarme 2</td>
+                        <td>15/02/2023</td>
+                        <td>22/06/2023</td>
+                        <td>Cozinha</td>
+                        <td>55 minutos</td>
+                        <td>Usuário B</td>
+                        <td><input type="checkbox" class="selectCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Alarme 3</td>
+                        <td>15/02/2023</td>
+                        <td>19/06/2023</td>
+                        <td>Banheiro</td>
+                        <td>3 meses</td>
+                        <td>Usuário C</td>
+                        <td><input type="checkbox" class="selectCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Alarme 4</td>
+                        <td>15/02/2023</td>
+                        <td>22/07/2023</td>
+                        <td>Garagem</td>
+                        <td>6 horas</td>
+                        <td>Usuário D</td>
+                        <td><input type="checkbox" class="selectCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Alarme 5</td>
+                        <td>13/07/2013</td>
+                        <td>12/02/2023</td>
+                        <td>Sala</td>
+                        <td>7 dias</td>
+                        <td>Usuário E</td>
+                        <td><input type="checkbox" class="selectCheckbox"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="deleted-items" id="deletedItems">
+        <h2>Itens Deletados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome do Alarme</th>
+                    <th>Data de Instalação</th>
+                    <th>Quando Disparou</th>
+                    <th>Local</th>
+                    <th>Duração</th>
+                    <th>Quem Desligou</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="deletedTableBody">
+                <!-- Linhas deletadas aparecerão aqui -->
+            </tbody>
+        </table>
+        <button class="button" onclick="hideDeletedItems()">Fechar</button>
+    </div>
+    <script>
+        const deletedItems = [];
+
+        function deleteSelected() {
+            const checkboxes = document.querySelectorAll('.selectCheckbox:checked');
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const rowData = Array.from(row.children).slice(0, -1).map(cell => cell.textContent);
+                deletedItems.push(rowData);
+                row.remove();
+            });
+        }
+
+        function showDeletedItems() {
+            const deletedItemsContainer = document.getElementById('deletedItems');
+            const deletedTableBody = document.getElementById('deletedTableBody');
+            deletedTableBody.innerHTML = '';
+            deletedItems.forEach(item => {
+                const row = document.createElement('tr');
+                item.forEach(cellData => {
+                    const cell = document.createElement('td');
+                    cell.textContent = cellData;
+                    row.appendChild(cell);
+                });
+                const actionsCell = document.createElement('td');
+                const restoreButton = document.createElement('button');
+                restoreButton.textContent = 'Restaurar';
+                restoreButton.classList.add('restore');
+                restoreButton.onclick = () => restoreItem(row, item);
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Deletar Permanentemente';
+                deleteButton.classList.add('trash');
+                deleteButton.onclick = () => deleteItemPermanently(row, item);
+                actionsCell.appendChild(restoreButton);
+                actionsCell.appendChild(deleteButton);
+                row.appendChild(actionsCell);
+                deletedTableBody.appendChild(row);
+            });
+            deletedItemsContainer.style.display = 'block';
+        }
+
+        function hideDeletedItems() {
+            const deletedItemsContainer = document.getElementById('deletedItems');
+            deletedItemsContainer.style.display = 'none';
+        }
+
+        function restoreItem(row, item) {
+            const alarmTableBody = document.getElementById('alarmTableBody');
+            const newRow = document.createElement('tr');
+            item.forEach(cellData => {
+                const cell = document.createElement('td');
+                cell.textContent = cellData;
+                newRow.appendChild(cell);
+            });
+            const selectCell = document.createElement('td');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.classList.add('selectCheckbox');
+            selectCell.appendChild(checkbox);
+            newRow.appendChild(selectCell);
+            alarmTableBody.appendChild(newRow);
+            row.remove();
+            const itemIndex = deletedItems.indexOf(item);
+            if (itemIndex > -1) {
+                deletedItems.splice(itemIndex, 1);
+            }
+        }
+
+        function deleteItemPermanently(row, item) {
+            row.remove();
+            const itemIndex = deletedItems.indexOf(item);
+            if (itemIndex > -1) {
+                deletedItems.splice(itemIndex, 1);
+            }
+        }
+    </script>
+</body>
+</html>
